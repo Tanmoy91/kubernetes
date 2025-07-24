@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAMP Stack on Kubernetes - Step-by-Step Guide by Tanmoy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-light: #4895ef;
+      --secondary: #3f37c9;
+      --dark: #1a1a2e;
+      --light: #f8f9fa;
+      --success: #4cc9f0;
+      --warning: #f72585;
+      --gray: #6c757d;
+      --code-bg: #011627;
+      --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7ff 0%, #eef2ff 100%);
+      color: var(--dark);
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 2px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--gray);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .highlight {
+      background: linear-gradient(90deg, rgba(67, 97, 238, 0.1) 0%, rgba(76, 201, 240, 0.1) 100%);
+      border-left: 4px solid var(--primary);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .highlight::before {
+      content: '💡';
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-size: 1.5rem;
+      opacity: 0.2;
+    }
+
+    .highlight p {
+      position: relative;
+      z-index: 1;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      transition: var(--transition);
+      border-top: 4px solid var(--primary);
+    }
+
+    .section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      color: var(--secondary);
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    h2 i {
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: #d6deeb;
+      padding: 1.5rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 1.5rem 0;
+      position: relative;
+      box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    pre::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+
+    pre::after {
+      content: '•••';
+      position: absolute;
+      top: 8px;
+      left: 15px;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 2px;
+      font-size: 1rem;
+    }
+
+    code {
+      font-family: 'Fira Code', monospace;
+      background: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    ul {
+      list-style: none;
+      margin: 1.5rem 0;
+    }
+
+    ul li {
+      margin-bottom: 0.8rem;
+      padding-left: 1.8rem;
+      position: relative;
+    }
+
+    ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .command {
+      background: rgba(1, 22, 39, 0.8);
+      color: white;
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      font-family: 'Fira Code', monospace;
+      margin: 1rem 0;
+      display: inline-block;
+      width: 100%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .command::before {
+      content: '$';
+      margin-right: 0.8rem;
+      color: var(--success);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding: 2rem 0;
+      color: var(--gray);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .author {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .step-number {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 32px;
+      margin-right: 0.8rem;
+      font-weight: 600;
+    }
+
+    .file-structure {
+      background: var(--code-bg);
+      color: #7fdbca;
+      padding: 1.5rem;
+      border-radius: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .file-structure .dir {
+      color: #82aaff;
+    }
+
+    .file-structure .file {
+      color: #ffcb8b;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1.5rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+      
+      .section {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Animation */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .rocket {
+      display: inline-block;
+      animation: float 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span class="rocket">🚀</span> Complete LAMP Stack Setup on Kubernetes</h1>
+      <p class="subtitle">A comprehensive guide to deploying a production-ready LAMP (Linux, Apache, MySQL, PHP) stack on Kubernetes with custom Docker images</p>
+    </header>
+
+    <div class="highlight">
+      <p>This guide walks you through building, deploying, and accessing a LAMP stack running on Kubernetes using your own custom Docker image. Follow each step carefully for optimal results.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-number">1</span><i class="fas fa-folder-open"></i> Project Structure</h2>
+      <p>Create your project folder with the following structure:</p>
+      <div class="file-structure">
+        <div><span class="dir">lamp/</span></div>
+        <div style="padding-left: 20px;"><span class="dir">php-apache/</span></div>
+        <div style="padding-left: 40px;">├── Dockerfile</div>
+        <div style="padding-left: 40px;">└── <span class="dir">src/</span></div>
+        <div style="padding-left: 60px;">└── <span class="file">index.php</span> ← (This guide page)</div>
+        <div style="padding-left: 20px;">├── <span class="file">mysql-deployment.yaml</span></div>
+        <div style="padding-left: 20px;">└── <span class="file">lamp-app.yaml</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-number">2</span><i class="fas fa-code"></i> Create Dockerfile</h2>
+      <p>Create a <code>Dockerfile</code> inside the <code>php-apache/</code> directory with the following content:</p>
+      <pre><code>FROM php:7.4-apache
+
+# Install system dependencies and mysqli extension
+RUN apt-get update && \
+    apt-get install -y libpng-dev libjpeg-dev libonig-dev libxml2-dev libzip-dev zip unzip && \
+    docker-php-ext-install mysqli && \
+    docker-php-ext-enable mysqli
+
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
+
+# Prioritize index.html over index.php
+RUN echo "DirectoryIndex index.html index.php" > /etc/apache2/conf-enabled/dir.override.conf
+
+# Copy app code
+COPY src/ /var/www/html/
+
+EXPOSE 80</code></pre>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-number">3</span><i class="fas fa-box"></i> Build & Load Docker Image</h2>
+      <p>Run the following commands to build and load the image into the Kubernetes container runtime:</p>
+      <div class="command">cd php-apache</div>
+      <div class="command">nerdctl build -t lamp-php-apache:v1 .</div>
+      <div class="command">nerdctl save -o lamp-php-apache-v1.tar lamp-php-apache:v1</div>
+      <div class="command">nerdctl --namespace=k8s.io load -i lamp-php-apache-v1.tar</div>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-number">4</span><i class="fas fa-database"></i> MySQL Deployment</h2>
+      <p>Create a file named <code>mysql-deployment.yaml</code> with the following content:</p>
+      <pre><code>apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: lamp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: lamp
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: lamp
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: mysql</code></pre>
+      <p>Apply the configuration:</p>
+      <div class="command">kubectl apply -f mysql-deployment.yaml</div>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-number">5</span><i class="fas fa-server"></i> LAMP App Deployment</h2>
+      <p>Create a file named <code>lamp-deployment.yaml</code> with the following content:</p>
+      <pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lamp-app
+  namespace: lamp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lamp-app
+  template:
+    metadata:
+      labels:
+        app: lamp-app
+    spec:
+      containers:
+      - name: lamp-container
+        image: lamp-php-apache:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lamp-service
+  namespace: lamp
+spec:
+  type: NodePort
+  selector:
+    app: lamp-app
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080</code></pre>
+      <p>Apply the configuration:</p>
+      <div class="command">kubectl apply -f lamp-deployment.yaml</div>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-number">6</span><i class="fas fa-sync-alt"></i> Update Deployment (v2 or newer)</h2>
+      <p>If you make changes and build a new image (e.g., v2), run these commands:</p>
+      <div class="command">nerdctl build -t lamp-php-apache:v2 .</div>
+      <div class="command">nerdctl save -o lamp-php-apache-v2.tar lamp-php-apache:v2</div>
+      <div class="command">nerdctl --namespace=k8s.io load -i lamp-php-apache-v2.tar</div>
+      <div class="command">kubectl set image deployment/lamp-app lamp-container=lamp-php-apache:v2 -n lamp</div>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-number">7</span><i class="fas fa-globe"></i> Access the Web App</h2>
+      <p>Open your browser and navigate to:</p>
+      <div class="command" style="background: var(--success); color: white;">http://localhost:30080</div>
+      <p style="margin-top: 1rem;">This beautiful guide page should now be visible in your browser!</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-number">8</span><i class="fas fa-lightbulb"></i> Pro Tips & Useful Commands</h2>
+      <ul>
+        <li><strong>Hard Refresh:</strong> Press <code>Ctrl + Shift + R</code> to force reload HTML updates (bypass cache)</li>
+        <li><strong>Check Pod Status:</strong> <code>kubectl get pods -n lamp</code></li>
+        <li><strong>Debug Logs:</strong> <code>kubectl logs &lt;pod-name&gt; -n lamp</code></li>
+        <li><strong>Describe Service:</strong> <code>kubectl describe svc lamp-service -n lamp</code></li>
+        <li><strong>Delete Everything:</strong> <code>kubectl delete namespace lamp</code> (clean slate)</li>
+        <li><strong>Monitor Resources:</strong> <code>kubectl top pods -n lamp</code></li>
+      </ul>
+    </div>
+
+    <footer>
+      Created with <i class="fas fa-heart" style="color: var(--warning);"></i> by <span class="author">Tanmoy Chatterjee</span> | © 2025 | <i class="fas fa-terminal"></i> Happy Coding!
+    </footer>
+  </div>
+</body>
+</html>
