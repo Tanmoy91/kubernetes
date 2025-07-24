@@ -15,7 +15,9 @@
       --warning: #FF9F1C;
       --dark: #2D3748;
       --light: #F7FAFC;
-      --code-bg: #1A1D2E;
+      --code-bg: #F8F9FF;
+      --code-border: #D6DEFF;
+      --code-text: #3A3D66;
       --gradient: linear-gradient(135deg, var(--primary), var(--accent));
       --card-shadow: 0 10px 20px rgba(108, 99, 255, 0.15);
       --transition: all 0.3s ease;
@@ -154,7 +156,7 @@
 
     pre {
       background: var(--code-bg);
-      color: #E2E8F0;
+      color: var(--code-text);
       padding: 1.5rem;
       border-radius: 12px;
       overflow-x: auto;
@@ -163,8 +165,8 @@
       line-height: 1.5;
       margin: 1.5rem 0;
       position: relative;
-      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.3);
-      border-left: 4px solid var(--accent);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.1);
+      border: 1px solid var(--code-border);
     }
 
     pre::before {
@@ -174,8 +176,7 @@
       left: 0;
       width: 100%;
       height: 40px;
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-      opacity: 0.2;
+      background: linear-gradient(90deg, rgba(108, 99, 255, 0.05) 0%, rgba(32, 196, 244, 0.05) 100%);
       border-top-left-radius: 12px;
       border-top-right-radius: 12px;
     }
@@ -185,7 +186,7 @@
       position: absolute;
       top: 12px;
       left: 20px;
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(108, 99, 255, 0.4);
       letter-spacing: 3px;
       font-size: 1rem;
       font-weight: bold;
@@ -193,12 +194,12 @@
 
     code {
       font-family: 'Fira Code', monospace;
-      background: rgba(108, 99, 255, 0.15);
+      background: rgba(108, 99, 255, 0.08);
       color: var(--primary);
       padding: 0.3rem 0.5rem;
       border-radius: 6px;
       font-size: 0.9rem;
-      border: 1px solid rgba(108, 99, 255, 0.2);
+      border: 1px solid rgba(108, 99, 255, 0.15);
     }
 
     ul {
@@ -225,17 +226,18 @@
 
     .command {
       background: var(--code-bg);
-      color: white;
+      color: var(--code-text);
       padding: 1rem 1.5rem;
       border-radius: 10px;
       font-family: 'Fira Code', monospace;
       margin: 1.2rem 0;
       display: inline-block;
       width: 100%;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.1);
       border-left: 4px solid var(--success);
       position: relative;
       overflow: hidden;
+      border: 1px solid var(--code-border);
     }
 
     .command::before {
@@ -243,16 +245,6 @@
       margin-right: 1rem;
       color: var(--success);
       font-weight: bold;
-    }
-
-    .command::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 40px;
-      height: 100%;
-      background: linear-gradient(90deg, rgba(30, 41, 59, 0), var(--code-bg));
     }
 
     footer {
@@ -295,20 +287,22 @@
       font-family: 'Fira Code', monospace;
       font-size: 0.95rem;
       line-height: 1.8;
-      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.1);
+      border: 1px solid var(--code-border);
+      color: var(--code-text);
     }
 
     .file-structure .dir {
-      color: #82AAFF;
+      color: var(--primary);
       font-weight: 500;
     }
 
     .file-structure .file {
-      color: #FFCB8B;
+      color: var(--secondary);
     }
 
     .file-structure .arrow {
-      color: #C792EA;
+      color: var(--accent);
       margin: 0 5px;
     }
 
@@ -360,29 +354,30 @@
     .dot {
       position: absolute;
       border-radius: 50%;
-      opacity: 0.3;
+      opacity: 0.15;
       z-index: -1;
+      filter: blur(8px);
     }
 
     .dot-1 {
-      width: 120px;
-      height: 120px;
+      width: 200px;
+      height: 200px;
       background: var(--primary);
       top: 10%;
-      left: -60px;
+      left: -100px;
     }
 
     .dot-2 {
-      width: 80px;
-      height: 80px;
+      width: 150px;
+      height: 150px;
       background: var(--secondary);
       bottom: 20%;
-      right: -40px;
+      right: -75px;
     }
 
     .dot-3 {
-      width: 60px;
-      height: 60px;
+      width: 100px;
+      height: 100px;
       background: var(--accent);
       top: 40%;
       right: 10%;
@@ -419,11 +414,11 @@
   <div class="container">
     <header class="pulse">
       <h1><span class="rocket">🚀</span> Complete LAMP Stack Setup on Kubernetes</h1>
-      <p class="subtitle">A vibrant guide to deploying a production-ready LAMP (Linux, Apache, MySQL, PHP) stack on Kubernetes</p>
+      <p class="subtitle">A bright and colorful guide to deploying a production-ready LAMP stack on Kubernetes</p>
     </header>
 
     <div class="highlight">
-      <p>This colorful guide walks you through building, deploying, and accessing a LAMP stack running on Kubernetes using your own custom Docker image. Follow each step carefully for optimal results.</p>
+      <p>This vibrant guide walks you through building, deploying, and accessing a LAMP stack running on Kubernetes using your own custom Docker image. Follow each step carefully for optimal results.</p>
     </div>
 
     <div class="section structure-section">
@@ -443,7 +438,7 @@
     <div class="section docker-section">
       <h2><span class="step-number">2</span><i class="fas fa-code"></i> Create Dockerfile</h2>
       <p>Create a <code>Dockerfile</code> inside the <code>php-apache/</code> directory with the following content:</p>
-      <pre><code>FROM php:7.4-apache
+      <pre><code style="color: var(--code-text);">FROM php:7.4-apache
 
 # Install system dependencies and mysqli extension
 RUN apt-get update && \
@@ -475,7 +470,7 @@ EXPOSE 80</code></pre>
     <div class="section kubernetes-section">
       <h2><span class="step-number">4</span><i class="fas fa-database"></i> MySQL Deployment</h2>
       <p>Create a file named <code>mysql-deployment.yaml</code> with the following content:</p>
-      <pre><code>apiVersion: v1
+      <pre><code style="color: var(--code-text);">apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
@@ -535,7 +530,7 @@ spec:
     <div class="section kubernetes-section">
       <h2><span class="step-number">5</span><i class="fas fa-server"></i> LAMP App Deployment</h2>
       <p>Create a file named <code>lamp-deployment.yaml</code> with the following content:</p>
-      <pre><code>apiVersion: apps/v1
+      <pre><code style="color: var(--code-text);">apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: lamp-app
