@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAMP Stack on Kubernetes - Step-by-Step Guide by Tanmoy</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <title>LAMP Stack on Kubernetes - Colorful Guide by Tanmoy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary: #4361ee;
-      --primary-light: #4895ef;
-      --secondary: #3f37c9;
-      --dark: #1a1a2e;
-      --light: #f8f9fa;
-      --success: #4cc9f0;
-      --warning: #f72585;
-      --gray: #6c757d;
-      --code-bg: #011627;
-      --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --primary: #6C63FF;
+      --secondary: #FF6584;
+      --accent: #20C4F4;
+      --success: #3ECF8E;
+      --warning: #FF9F1C;
+      --dark: #2D3748;
+      --light: #F7FAFC;
+      --code-bg: #1A1D2E;
+      --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+      --card-shadow: 0 10px 20px rgba(108, 99, 255, 0.15);
+      --transition: all 0.3s ease;
     }
 
     * {
@@ -29,7 +29,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #f5f7ff 0%, #eef2ff 100%);
+      background: linear-gradient(135deg, #F9F9FF 0%, #F0F4FF 100%);
       color: var(--dark);
       line-height: 1.6;
       margin: 0;
@@ -46,57 +46,59 @@
     header {
       text-align: center;
       margin-bottom: 3rem;
-      padding: 2rem 0;
+      padding: 3rem 0;
+      background: var(--gradient);
+      border-radius: 16px;
+      color: white;
+      box-shadow: var(--card-shadow);
       position: relative;
+      overflow: hidden;
     }
 
-    header::after {
+    header::before {
       content: '';
       position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 150px;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary), var(--success));
-      border-radius: 2px;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      transform: rotate(30deg);
     }
 
     h1 {
-      font-size: 2.8rem;
+      font-size: 3rem;
       font-weight: 700;
-      color: var(--primary);
       margin-bottom: 1rem;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.2;
+      position: relative;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .subtitle {
-      font-size: 1.2rem;
-      color: var(--gray);
+      font-size: 1.3rem;
       max-width: 700px;
       margin: 0 auto;
+      opacity: 0.9;
+      font-weight: 300;
     }
 
     .highlight {
-      background: linear-gradient(90deg, rgba(67, 97, 238, 0.1) 0%, rgba(76, 201, 240, 0.1) 100%);
-      border-left: 4px solid var(--primary);
+      background: linear-gradient(90deg, rgba(255, 101, 132, 0.1) 0%, rgba(62, 207, 142, 0.1) 100%);
+      border-left: 4px solid var(--secondary);
       padding: 1.5rem;
-      margin: 2rem 0;
-      border-radius: 8px;
+      margin: 2.5rem 0;
+      border-radius: 12px;
       position: relative;
       overflow: hidden;
     }
 
     .highlight::before {
-      content: '💡';
+      content: '✨';
       position: absolute;
       top: 1rem;
       left: 1rem;
       font-size: 1.5rem;
-      opacity: 0.2;
+      opacity: 0.3;
     }
 
     .highlight p {
@@ -104,49 +106,65 @@
       z-index: 1;
       font-size: 1.1rem;
       margin: 0;
+      color: var(--dark);
     }
 
     .section {
       background: white;
-      border-radius: 12px;
+      border-radius: 16px;
       box-shadow: var(--card-shadow);
-      padding: 2rem;
+      padding: 2.5rem;
       margin-bottom: 2.5rem;
       transition: var(--transition);
-      border-top: 4px solid var(--primary);
+      border-top: 5px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(108, 99, 255, 0.05) 0%, rgba(108, 99, 255, 0) 70%);
+      border-radius: 50%;
     }
 
     .section:hover {
       transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 15px 30px rgba(108, 99, 255, 0.2);
     }
 
     h2 {
-      color: var(--secondary);
+      color: var(--primary);
       margin-bottom: 1.5rem;
       font-size: 1.8rem;
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 1rem;
+      position: relative;
     }
 
     h2 i {
-      color: var(--primary);
-      font-size: 1.5rem;
+      color: var(--accent);
+      font-size: 1.6rem;
     }
 
     pre {
       background: var(--code-bg);
-      color: #d6deeb;
+      color: #E2E8F0;
       padding: 1.5rem;
-      border-radius: 8px;
+      border-radius: 12px;
       overflow-x: auto;
       font-family: 'Fira Code', monospace;
       font-size: 0.95rem;
       line-height: 1.5;
       margin: 1.5rem 0;
       position: relative;
-      box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.3);
+      border-left: 4px solid var(--accent);
     }
 
     pre::before {
@@ -155,29 +173,32 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 30px;
-      background: rgba(255, 255, 255, 0.1);
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
+      height: 40px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0.2;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
     }
 
     pre::after {
       content: '•••';
       position: absolute;
-      top: 8px;
-      left: 15px;
-      color: rgba(255, 255, 255, 0.4);
-      letter-spacing: 2px;
+      top: 12px;
+      left: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 3px;
       font-size: 1rem;
+      font-weight: bold;
     }
 
     code {
       font-family: 'Fira Code', monospace;
-      background: rgba(67, 97, 238, 0.1);
+      background: rgba(108, 99, 255, 0.15);
       color: var(--primary);
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
       font-size: 0.9rem;
+      border: 1px solid rgba(108, 99, 255, 0.2);
     }
 
     ul {
@@ -187,78 +208,184 @@
 
     ul li {
       margin-bottom: 0.8rem;
-      padding-left: 1.8rem;
+      padding-left: 2rem;
       position: relative;
     }
 
     ul li::before {
-      content: '→';
+      content: '';
       position: absolute;
       left: 0;
-      color: var(--primary);
-      font-weight: bold;
+      top: 0.5rem;
+      width: 12px;
+      height: 12px;
+      background: var(--gradient);
+      border-radius: 50%;
     }
 
     .command {
-      background: rgba(1, 22, 39, 0.8);
+      background: var(--code-bg);
       color: white;
-      padding: 0.8rem 1rem;
-      border-radius: 6px;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
       font-family: 'Fira Code', monospace;
-      margin: 1rem 0;
+      margin: 1.2rem 0;
       display: inline-block;
       width: 100%;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      border-left: 4px solid var(--success);
+      position: relative;
+      overflow: hidden;
     }
 
     .command::before {
       content: '$';
-      margin-right: 0.8rem;
+      margin-right: 1rem;
       color: var(--success);
+      font-weight: bold;
+    }
+
+    .command::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 40px;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(30, 41, 59, 0), var(--code-bg));
     }
 
     footer {
       text-align: center;
       margin-top: 4rem;
-      padding: 2rem 0;
-      color: var(--gray);
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 2.5rem 0;
+      color: var(--dark);
+      border-top: 1px solid rgba(108, 99, 255, 0.2);
+      background: rgba(247, 250, 252, 0.7);
+      border-radius: 16px;
     }
 
     .author {
-      font-weight: 600;
-      color: var(--primary);
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .step-number {
-      display: inline-block;
-      width: 32px;
-      height: 32px;
-      background: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: var(--gradient);
       color: white;
       border-radius: 50%;
       text-align: center;
-      line-height: 32px;
-      margin-right: 0.8rem;
+      line-height: 36px;
+      margin-right: 1rem;
       font-weight: 600;
+      box-shadow: 0 4px 8px rgba(108, 99, 255, 0.3);
     }
 
     .file-structure {
       background: var(--code-bg);
-      color: #7fdbca;
       padding: 1.5rem;
-      border-radius: 8px;
+      border-radius: 12px;
       font-family: 'Fira Code', monospace;
       font-size: 0.95rem;
       line-height: 1.8;
+      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
     .file-structure .dir {
-      color: #82aaff;
+      color: #82AAFF;
+      font-weight: 500;
     }
 
     .file-structure .file {
-      color: #ffcb8b;
+      color: #FFCB8B;
+    }
+
+    .file-structure .arrow {
+      color: #C792EA;
+      margin: 0 5px;
+    }
+
+    /* Colorful backgrounds for different sections */
+    .structure-section {
+      background: linear-gradient(135deg, rgba(255, 159, 28, 0.05) 0%, rgba(255, 101, 132, 0.05) 100%);
+    }
+
+    .docker-section {
+      background: linear-gradient(135deg, rgba(32, 196, 244, 0.05) 0%, rgba(108, 99, 255, 0.05) 100%);
+    }
+
+    .kubernetes-section {
+      background: linear-gradient(135deg, rgba(62, 207, 142, 0.05) 0%, rgba(32, 196, 244, 0.05) 100%);
+    }
+
+    .access-section {
+      background: linear-gradient(135deg, rgba(255, 101, 132, 0.05) 0%, rgba(255, 159, 28, 0.05) 100%);
+    }
+
+    .tips-section {
+      background: linear-gradient(135deg, rgba(108, 99, 255, 0.05) 0%, rgba(62, 207, 142, 0.05) 100%);
+    }
+
+    /* Animation */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .rocket {
+      display: inline-block;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    /* Colorful dots decoration */
+    .dot {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.3;
+      z-index: -1;
+    }
+
+    .dot-1 {
+      width: 120px;
+      height: 120px;
+      background: var(--primary);
+      top: 10%;
+      left: -60px;
+    }
+
+    .dot-2 {
+      width: 80px;
+      height: 80px;
+      background: var(--secondary);
+      bottom: 20%;
+      right: -40px;
+    }
+
+    .dot-3 {
+      width: 60px;
+      height: 60px;
+      background: var(--accent);
+      top: 40%;
+      right: 10%;
     }
 
     @media (max-width: 768px) {
@@ -267,7 +394,7 @@
       }
       
       h1 {
-        font-size: 2rem;
+        font-size: 2.2rem;
       }
       
       h2 {
@@ -275,49 +402,45 @@
       }
       
       .section {
-        padding: 1.5rem;
+        padding: 1.8rem;
       }
-    }
 
-    /* Animation */
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
-    }
-
-    .rocket {
-      display: inline-block;
-      animation: float 3s ease-in-out infinite;
+      .dot {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="dot dot-1"></div>
+  <div class="dot dot-2"></div>
+  <div class="dot dot-3"></div>
+
   <div class="container">
-    <header>
+    <header class="pulse">
       <h1><span class="rocket">🚀</span> Complete LAMP Stack Setup on Kubernetes</h1>
-      <p class="subtitle">A comprehensive guide to deploying a production-ready LAMP (Linux, Apache, MySQL, PHP) stack on Kubernetes with custom Docker images</p>
+      <p class="subtitle">A vibrant guide to deploying a production-ready LAMP (Linux, Apache, MySQL, PHP) stack on Kubernetes</p>
     </header>
 
     <div class="highlight">
-      <p>This guide walks you through building, deploying, and accessing a LAMP stack running on Kubernetes using your own custom Docker image. Follow each step carefully for optimal results.</p>
+      <p>This colorful guide walks you through building, deploying, and accessing a LAMP stack running on Kubernetes using your own custom Docker image. Follow each step carefully for optimal results.</p>
     </div>
 
-    <div class="section">
+    <div class="section structure-section">
       <h2><span class="step-number">1</span><i class="fas fa-folder-open"></i> Project Structure</h2>
       <p>Create your project folder with the following structure:</p>
       <div class="file-structure">
         <div><span class="dir">lamp/</span></div>
         <div style="padding-left: 20px;"><span class="dir">php-apache/</span></div>
-        <div style="padding-left: 40px;">├── Dockerfile</div>
-        <div style="padding-left: 40px;">└── <span class="dir">src/</span></div>
-        <div style="padding-left: 60px;">└── <span class="file">index.php</span> ← (This guide page)</div>
-        <div style="padding-left: 20px;">├── <span class="file">mysql-deployment.yaml</span></div>
-        <div style="padding-left: 20px;">└── <span class="file">lamp-app.yaml</span></div>
+        <div style="padding-left: 40px;"><span class="arrow">├──</span> Dockerfile</div>
+        <div style="padding-left: 40px;"><span class="arrow">└──</span> <span class="dir">src/</span></div>
+        <div style="padding-left: 60px;"><span class="arrow">└──</span> <span class="file">index.php</span> <span style="color: var(--success);">← (This beautiful page)</span></div>
+        <div style="padding-left: 20px;"><span class="arrow">├──</span> <span class="file">mysql-deployment.yaml</span></div>
+        <div style="padding-left: 20px;"><span class="arrow">└──</span> <span class="file">lamp-app.yaml</span></div>
       </div>
     </div>
 
-    <div class="section">
+    <div class="section docker-section">
       <h2><span class="step-number">2</span><i class="fas fa-code"></i> Create Dockerfile</h2>
       <p>Create a <code>Dockerfile</code> inside the <code>php-apache/</code> directory with the following content:</p>
       <pre><code>FROM php:7.4-apache
@@ -340,7 +463,7 @@ COPY src/ /var/www/html/
 EXPOSE 80</code></pre>
     </div>
 
-    <div class="section">
+    <div class="section docker-section">
       <h2><span class="step-number">3</span><i class="fas fa-box"></i> Build & Load Docker Image</h2>
       <p>Run the following commands to build and load the image into the Kubernetes container runtime:</p>
       <div class="command">cd php-apache</div>
@@ -349,7 +472,7 @@ EXPOSE 80</code></pre>
       <div class="command">nerdctl --namespace=k8s.io load -i lamp-php-apache-v1.tar</div>
     </div>
 
-    <div class="section">
+    <div class="section kubernetes-section">
       <h2><span class="step-number">4</span><i class="fas fa-database"></i> MySQL Deployment</h2>
       <p>Create a file named <code>mysql-deployment.yaml</code> with the following content:</p>
       <pre><code>apiVersion: v1
@@ -406,11 +529,10 @@ spec:
     - port: 3306
   selector:
     app: mysql</code></pre>
-      <p>Apply the configuration:</p>
       <div class="command">kubectl apply -f mysql-deployment.yaml</div>
     </div>
 
-    <div class="section">
+    <div class="section kubernetes-section">
       <h2><span class="step-number">5</span><i class="fas fa-server"></i> LAMP App Deployment</h2>
       <p>Create a file named <code>lamp-deployment.yaml</code> with the following content:</p>
       <pre><code>apiVersion: apps/v1
@@ -448,11 +570,10 @@ spec:
     - port: 80
       targetPort: 80
       nodePort: 30080</code></pre>
-      <p>Apply the configuration:</p>
       <div class="command">kubectl apply -f lamp-deployment.yaml</div>
     </div>
 
-    <div class="section">
+    <div class="section kubernetes-section">
       <h2><span class="step-number">6</span><i class="fas fa-sync-alt"></i> Update Deployment (v2 or newer)</h2>
       <p>If you make changes and build a new image (e.g., v2), run these commands:</p>
       <div class="command">nerdctl build -t lamp-php-apache:v2 .</div>
@@ -461,27 +582,34 @@ spec:
       <div class="command">kubectl set image deployment/lamp-app lamp-container=lamp-php-apache:v2 -n lamp</div>
     </div>
 
-    <div class="section">
+    <div class="section access-section">
       <h2><span class="step-number">7</span><i class="fas fa-globe"></i> Access the Web App</h2>
       <p>Open your browser and navigate to:</p>
-      <div class="command" style="background: var(--success); color: white;">http://localhost:30080</div>
-      <p style="margin-top: 1rem;">This beautiful guide page should now be visible in your browser!</p>
+      <div class="command" style="background: linear-gradient(135deg, var(--primary), var(--success)); color: white; border-left: 4px solid var(--warning);">
+        http://localhost:30080
+      </div>
+      <p style="margin-top: 1.5rem; font-size: 1.1rem;">
+        <i class="fas fa-check-circle" style="color: var(--success);"></i> This beautiful, colorful guide page should now be visible in your browser!
+      </p>
     </div>
 
-    <div class="section">
+    <div class="section tips-section">
       <h2><span class="step-number">8</span><i class="fas fa-lightbulb"></i> Pro Tips & Useful Commands</h2>
       <ul>
         <li><strong>Hard Refresh:</strong> Press <code>Ctrl + Shift + R</code> to force reload HTML updates (bypass cache)</li>
-        <li><strong>Check Pod Status:</strong> <code>kubectl get pods -n lamp</code></li>
-        <li><strong>Debug Logs:</strong> <code>kubectl logs &lt;pod-name&gt; -n lamp</code></li>
+        <li><strong>Check Pod Status:</strong> <code>kubectl get pods -n lamp --color</code></li>
+        <li><strong>Debug Logs:</strong> <code>kubectl logs &lt;pod-name&gt; -n lamp --tail=50</code></li>
         <li><strong>Describe Service:</strong> <code>kubectl describe svc lamp-service -n lamp</code></li>
         <li><strong>Delete Everything:</strong> <code>kubectl delete namespace lamp</code> (clean slate)</li>
         <li><strong>Monitor Resources:</strong> <code>kubectl top pods -n lamp</code></li>
+        <li><strong>Get Services:</strong> <code>kubectl get svc -n lamp</code></li>
+        <li><strong>Enter Container:</strong> <code>kubectl exec -it &lt;pod-name&gt; -n lamp -- bash</code></li>
       </ul>
     </div>
 
     <footer>
-      Created with <i class="fas fa-heart" style="color: var(--warning);"></i> by <span class="author">Tanmoy Chatterjee</span> | © 2025 | <i class="fas fa-terminal"></i> Happy Coding!
+      <p>Created with <i class="fas fa-heart" style="color: var(--secondary);"></i> by <span class="author">Tanmoy Chatterjee</span></p>
+      <p style="margin-top: 0.5rem;">© 2025 | <i class="fas fa-terminal"></i> Happy colorful coding! <i class="fas fa-palette" style="color: var(--accent);"></i></p>
     </footer>
   </div>
 </body>
