@@ -12,14 +12,25 @@ $message = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $is_leave = isset($_POST['on_leave']) ? 1 : 0;
 
-    $stmt = $conn->prepare("INSERT INTO attendance (user_id, on_leave) VALUES (?, ?)");
-    $stmt->bind_param("ii", $user_id, $is_leave);
-    $stmt->execute();
+    // Check if already marked today
+    $check = $conn->prepare("SELECT id FROM attendance WHERE user_id = ? AND date = CURDATE()");
+    $check->bind_param("i", $user_id);
+    $check->execute();
+    $result = $check->get_result();
 
-    if ($is_leave) {
-        $message = "✅ Leave recorded successfully!";
+    if ($result->num_rows === 0) {
+        // Insert attendance
+        $stmt = $conn->prepare("INSERT INTO attendance (user_id, on_leave, date) VALUES (?, ?, CURDATE())");
+        $stmt->bind_param("ii", $user_id, $is_leave);
+        $stmt->execute();
+
+        if ($is_leave) {
+            $message = "✅ Leave recorded successfully!";
+        } else {
+            $message = "✅ Attendance marked successfully!";
+        }
     } else {
-        $message = "✅ Attendance marked successfully!";
+        $message = "⚠️ You have already marked your attendance today.";
     }
 }
 ?>
@@ -41,11 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             border-radius: 10px;
             box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
         }
-        .message {
-            margin-top: 15px;
-            font-weight: bold;
-            color: green;
-        }
         .logout-link {
             margin-top: 20px;
             display: inline-block;
@@ -55,9 +61,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body>
     <div class="container text-center">
         <h2 class="mb-4">Welcome to Attendance Portal</h2>
+
         <?php if ($message): ?>
-            <div class="alert alert-success"><?php echo $message; ?></div>
+            <div class="alert alert-info"><?php echo $message; ?></div>
         <?php endif; ?>
+
         <form method="post">
             <div class="form-check mb-3 text-start">
                 <input class="form-check-input" type="checkbox" name="on_leave" id="onLeave">
@@ -67,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
             <button type="submit" class="btn btn-primary w-100">Submit</button>
         </form>
+
         <a href="logout.php" class="logout-link btn btn-outline-secondary w-100 mt-3">Logout</a>
     </div>
 </body>
