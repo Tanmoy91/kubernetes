@@ -1,23 +1,39 @@
 <?php
 session_start();
+
+// Database connection
 $conn = new mysqli("mysql.lamp.svc.cluster.local", "root", "password", "testdb");
 
-$email = $_POST['email'];
-$password = $_POST['password'];
+// Check DB connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-$sql = "SELECT * FROM users WHERE email = '$email'";
-$result = $conn->query($sql);
+// Collect and sanitize inputs
+$email = $_POST['email'] ?? '';
+$password = $_POST['password'] ?? '';
 
-if ($result->num_rows == 1) {
+// Prepare statement to prevent SQL injection
+$stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 1) {
     $user = $result->fetch_assoc();
 
-    if ($user['password'] === $password) {  // For real app: use password_verify()
+    // For real use: if (password_verify($password, $user['password']))
+    if ($user['password'] === $password) {
         $_SESSION['user_id'] = $user['id'];
         header("Location: attendance.php");
+        exit();
     } else {
         echo "Wrong password!";
     }
 } else {
     echo "Email not found!";
 }
+
+$stmt->close();
+$conn->close();
 ?>
