@@ -90,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
     <div class="card text-center">
-        <h2>Welcome to Attendance Portal</h2>
+        <h2>Welcome to Inadev Attendance Portal</h2>
 
         <?php if ($message): ?>
             <div class="alert alert-info"><?php echo $message; ?></div>
