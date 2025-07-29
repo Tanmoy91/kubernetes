@@ -1,4 +1,4 @@
-<?php
+ <?php
 $error = $_GET['error'] ?? '';
 ?>
 <!DOCTYPE html>
@@ -109,7 +109,7 @@ $error = $_GET['error'] ?? '';
         <button type="submit">Login</button>
     </form>
 
-    <div class="footer">© <?= date("Y") ?> Cogenerate Tech | All rights reserved</div>
+    <div class="footer">© <?= date("Y") ?> Inadev India Pvt. Ltd. | All rights reserved</div>
 </div>
 
 </body>
