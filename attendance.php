@@ -6,84 +6,107 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $conn = new mysqli("mysql.lamp.svc.cluster.local", "root", "password", "testdb");
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+$user_id = $_SESSION['user_id'];
+
+$message = "";
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $is_leave = isset($_POST['on_leave']) ? 1 : 0;
+
+    // Check if already marked today
+    $check = $conn->prepare("SELECT id FROM attendance WHERE user_id = ? AND date = CURDATE()");
+    $check->bind_param("i", $user_id);
+    $check->execute();
+    $result = $check->get_result();
+
+    if ($result->num_rows === 0) {
+        // Insert attendance
+        $stmt = $conn->prepare("INSERT INTO attendance (user_id, on_leave, date) VALUES (?, ?, CURDATE())");
+        $stmt->bind_param("ii", $user_id, $is_leave);
+        $stmt->execute();
+
+        if ($is_leave) {
+            $message = "✅ Leave recorded successfully!";
+        } else {
+            $message = "✅ Attendance marked successfully!";
+        }
+    } else {
+        $message = "⚠️ You have already marked your attendance today.";
+    }
 }
-
-$query = "SELECT a.id, u.email, a.date, 
-    CASE WHEN a.on_leave = 1 THEN 'On Leave' ELSE 'Present' END AS status
-    FROM attendance a
-    JOIN users u ON a.user_id = u.id
-    ORDER BY a.date DESC";
-
-$result = $conn->query($query);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Attendance Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f4f6f9;
+            background: linear-gradient(120deg, #74ebd5, #9face6);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .container {
-            margin-top: 40px;
+
+        .card {
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            border: none;
+            border-radius: 15px;
+            background-color: #fff;
+            box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.1);
         }
-        .table thead {
-            background-color: #343a40;
-            color: white;
+
+        .card h2 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 20px;
         }
-        .status-present {
-            color: green;
-            font-weight: bold;
+
+        .btn-primary {
+            background-color: #5a67d8;
+            border: none;
         }
-        .status-leave {
-            color: orange;
-            font-weight: bold;
+
+        .btn-primary:hover {
+            background-color: #434190;
+        }
+
+        .form-check-label {
+            color: #555;
+        }
+
+        .logout-link {
+            margin-top: 20px;
+        }
+
+        .alert {
+            font-size: 0.95rem;
         }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand">Attendance System</span>
-        <div class="d-flex">
-            <a href="logout.php" class="btn btn-outline-light">Logout</a>
-        </div>
-    </div>
-</nav>
+    <div class="card text-center">
+        <h2>Welcome to Attendance Portal</h2>
 
-<div class="container">
-    <h3 class="mb-4 text-center">Today's Attendance Overview</h3>
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover shadow-sm">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while($row = $result->fetch_assoc()) { ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['id']) ?></td>
-                        <td><?= htmlspecialchars($row['email']) ?></td>
-                        <td><?= htmlspecialchars($row['date']) ?></td>
-                        <td class="<?= $row['status'] === 'Present' ? 'status-present' : 'status-leave' ?>">
-                            <?= $row['status'] ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
+        <?php if ($message): ?>
+            <div class="alert alert-info"><?php echo $message; ?></div>
+        <?php endif; ?>
+
+        <form method="post">
+            <div class="form-check text-start mb-3">
+                <input class="form-check-input" type="checkbox" name="on_leave" id="onLeave">
+                <label class="form-check-label" for="onLeave">
+                    I'm on leave today
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Submit Attendance</button>
+        </form>
+
+        <a href="logout.php" class="btn btn-outline-secondary w-100 logout-link">Logout</a>
     </div>
-</div>
 </body>
 </html>
-
-<?php $conn->close(); ?>
