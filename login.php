@@ -1,76 +1,116 @@
 <?php
-session_start();
-if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php"); // redirect if already logged in
-    exit();
-}
+$error = $_GET['error'] ?? '';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Attendance System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <title>Login | Attendance System</title>
     <style>
-        body {
-            background: #f4f6f9;
+        * {
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .login-container {
-            max-width: 400px;
-            margin: 80px auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.08);
+
+        body {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-        .login-container h2 {
-            margin-bottom: 25px;
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 24px;
             color: #333;
         }
-        .form-control {
-            border-radius: 8px;
+
+        .input-group {
+            margin-bottom: 20px;
         }
-        .btn-primary {
-            border-radius: 8px;
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #444;
         }
-        .footer-note {
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0072ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-box button:hover {
+            background-color: #005bd8;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .footer {
             margin-top: 20px;
-            font-size: 0.9rem;
-            color: #777;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
         }
+
     </style>
 </head>
 <body>
 
-    <div class="login-container shadow-sm">
-        <h2 class="text-center">Login</h2>
-
-        <?php if (isset($_GET['error'])): ?>
-            <div class="alert alert-danger"><?php echo htmlspecialchars($_GET['error']); ?></div>
-        <?php endif; ?>
-
-        <form method="POST" action="authenticate.php">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-            </div>
-            <div class="mb-4">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
-
-        <div class="footer-note text-center mt-3">
-            Don't have an account? Contact Admin.
+<div class="login-box">
+    <h2>Employee Login</h2>
+    
+    <?php if ($error): ?>
+        <div class="error-message"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
+    
+    <form method="POST" action="authenticate.php">
+        <div class="input-group">
+            <label for="email">Email Address</label>
+            <input type="email" name="email" id="email" placeholder="Enter email" required>
         </div>
-    </div>
+
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="Enter password" required>
+        </div>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <div class="footer">© <?= date("Y") ?> Cogenerate Tech | All rights reserved</div>
+</div>
 
 </body>
 </html>
