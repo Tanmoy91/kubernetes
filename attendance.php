@@ -5,7 +5,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Database connection with error handling
+// Database connection
 $conn = new mysqli("mysql.lamp.svc.cluster.local", "root", "password", "testdb");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -13,8 +13,8 @@ if ($conn->connect_error) {
 
 $user_id = $_SESSION['user_id'];
 
-// Get user details with error handling
-$user_query = $conn->prepare("SELECT name, email, department, position FROM users WHERE id = ?");
+// Get only the fields that exist in your database
+$user_query = $conn->prepare("SELECT name, email FROM users WHERE id = ?");
 if (!$user_query) {
     die("Prepare failed: (" . $conn->errno . ") " . $conn->error);
 }
