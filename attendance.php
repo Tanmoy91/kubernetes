@@ -444,7 +444,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div class="footer-content">
                 <div class="footer-column">
                     <h5>Inadev</h5>
-                    <p>Innovating digital solutions for tomorrow's challenges.</p>
+                    <p>The sky isn't the limit.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -473,9 +473,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <div class="footer-column">
                     <h5>Contact</h5>
                     <ul class="footer-links">
-                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Tech Park, Bangalore</li>
-                        <li><i class="fas fa-phone me-2"></i> +91 80 1234 5678</li>
-                        <li><i class="fas fa-envelope me-2"></i> hr@inadev.com</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Unit 901, Tower 1, Godrej Waterside Sector V, Salt Lake City | West Bengal - 700091</li>
+                        <li><i class="fas fa-phone me-2"></i> +91 33 6606 4343</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@inadev.com</li>
                     </ul>
                 </div>
             </div>
