@@ -5,15 +5,34 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Database connection with error handling
 $conn = new mysqli("mysql.lamp.svc.cluster.local", "root", "password", "testdb");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 $user_id = $_SESSION['user_id'];
 
-// Get user details for display
+// Get user details with error handling
 $user_query = $conn->prepare("SELECT name, email, department, position FROM users WHERE id = ?");
+if (!$user_query) {
+    die("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+}
+
 $user_query->bind_param("i", $user_id);
-$user_query->execute();
+if (!$user_query->execute()) {
+    die("Execute failed: (" . $user_query->errno . ") " . $user_query->error);
+}
+
 $user_result = $user_query->get_result();
+if (!$user_result) {
+    die("Get result failed: (" . $user_query->errno . ") " . $user_query->error);
+}
+
 $user = $user_result->fetch_assoc();
+if (!$user) {
+    die("User not found");
+}
 
 // Get attendance history (last 30 days)
 $history_query = $conn->prepare("SELECT date, on_leave, check_in_time FROM attendance WHERE user_id = ? ORDER BY date DESC LIMIT 30");
