@@ -5,56 +5,25 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Database connection
 $conn = new mysqli("mysql.lamp.svc.cluster.local", "root", "password", "testdb");
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
 $user_id = $_SESSION['user_id'];
 
-// Get only the fields that exist in your database
+// Get user details for display
 $user_query = $conn->prepare("SELECT name, email FROM users WHERE id = ?");
-if (!$user_query) {
-    die("Prepare failed: (" . $conn->errno . ") " . $conn->error);
-}
-
 $user_query->bind_param("i", $user_id);
-if (!$user_query->execute()) {
-    die("Execute failed: (" . $user_query->errno . ") " . $user_query->error);
-}
-
+$user_query->execute();
 $user_result = $user_query->get_result();
-if (!$user_result) {
-    die("Get result failed: (" . $user_query->errno . ") " . $user_query->error);
-}
-
 $user = $user_result->fetch_assoc();
-if (!$user) {
-    die("User not found");
-}
 
-// Get attendance history (last 30 days)
-$history_query = $conn->prepare("SELECT date, on_leave, check_in_time FROM attendance WHERE user_id = ? ORDER BY date DESC LIMIT 30");
+// Get attendance history (last 7 days)
+$history_query = $conn->prepare("SELECT date, on_leave FROM attendance WHERE user_id = ? ORDER BY date DESC LIMIT 7");
 $history_query->bind_param("i", $user_id);
 $history_query->execute();
 $history_result = $history_query->get_result();
 
-// Get attendance stats
-$stats_query = $conn->prepare("SELECT 
-    SUM(CASE WHEN on_leave = 0 THEN 1 ELSE 0 END) as present_days,
-    SUM(CASE WHEN on_leave = 1 THEN 1 ELSE 0 END) as leave_days,
-    COUNT(*) as total_days
-    FROM attendance WHERE user_id = ? AND date BETWEEN DATE_SUB(CURDATE(), INTERVAL 30 DAY) AND CURDATE()");
-$stats_query->bind_param("i", $user_id);
-$stats_query->execute();
-$stats_result = $stats_query->get_result();
-$stats = $stats_result->fetch_assoc();
-
 $message = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $is_leave = isset($_POST['on_leave']) ? 1 : 0;
-    $check_in_time = date('H:i:s');
 
     // Check if already marked today
     $check = $conn->prepare("SELECT id FROM attendance WHERE user_id = ? AND date = CURDATE()");
@@ -64,22 +33,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($result->num_rows === 0) {
         // Insert attendance
-        $stmt = $conn->prepare("INSERT INTO attendance (user_id, on_leave, date, check_in_time) VALUES (?, ?, CURDATE(), ?)");
-        $stmt->bind_param("iis", $user_id, $is_leave, $check_in_time);
+        $stmt = $conn->prepare("INSERT INTO attendance (user_id, on_leave, date) VALUES (?, ?, CURDATE())");
+        $stmt->bind_param("ii", $user_id, $is_leave);
         $stmt->execute();
 
         if ($is_leave) {
             $message = "Leave recorded successfully!";
         } else {
-            $message = "Attendance marked successfully at " . date('h:i A', strtotime($check_in_time));
+            $message = "Attendance marked successfully!";
         }
         
-        // Refresh data after submission
+        // Refresh history after submission
         $history_query->execute();
         $history_result = $history_query->get_result();
-        $stats_query->execute();
-        $stats_result = $stats_query->get_result();
-        $stats = $stats_result->fetch_assoc();
     } else {
         $message = "You have already marked your attendance today.";
     }
@@ -105,16 +71,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             --success: #4cc9f0;
             --warning: #f72585;
             --info: #7209b7;
-            --gray: #6c757d;
         }
         
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
             color: var(--dark);
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
         
         .glass-card {
@@ -215,61 +180,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             color: white;
         }
         
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin: 0.5rem 0;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .present-stat {
-            color: var(--success);
-        }
-        
-        .leave-stat {
-            color: var(--warning);
-        }
-        
-        .total-stat {
-            color: var(--primary);
-        }
-        
         .attendance-history {
             margin-top: 2rem;
-        }
-        
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
         }
         
         .history-item {
@@ -295,7 +207,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         .history-date i {
             margin-right: 0.5rem;
             font-size: 0.9rem;
-            color: var(--gray);
+            color: var(--dark);
+            opacity: 0.7;
         }
         
         .history-status {
@@ -310,12 +223,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         .status-leave {
             color: var(--warning);
-        }
-        
-        .history-time {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-left: 0.5rem;
         }
         
         .notification {
@@ -358,6 +265,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             background: var(--secondary);
         }
         
+        /* Footer Styles */
         .footer {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
@@ -400,7 +308,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         .footer-links a {
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         .footer-links a:hover {
@@ -464,10 +372,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         /* Responsive adjustments */
         @media (max-width: 768px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-            
             .header-gradient {
                 padding: 1.5rem;
             }
@@ -486,26 +390,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <?= strtoupper(substr($user['name'], 0, 1)) ?>
                 </div>
                 <h3 class="mb-1"><?= htmlspecialchars($user['name']) ?></h3>
-                <p class="mb-0 opacity-75"><?= htmlspecialchars($user['position']) ?> • <?= htmlspecialchars($user['department']) ?></p>
+                <p class="mb-0 opacity-75"><?= htmlspecialchars($user['email']) ?></p>
             </div>
             
             <div class="attendance-form">
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <div class="stat-value present-stat"><?= $stats['present_days'] ?? 0 ?></div>
-                        <div class="stat-label">Present Days</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value leave-stat"><?= $stats['leave_days'] ?? 0 ?></div>
-                        <div class="stat-label">Leave Days</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value total-stat"><?= $stats['total_days'] ?? 0 ?></div>
-                        <div class="stat-label">Total Days</div>
-                    </div>
-                </div>
-                
-                <h4 class="text-center mb-4">Mark Today's Attendance</h4>
+                <h4 class="text-center mb-4">Daily Attendance</h4>
                 
                 <form method="post" id="attendanceForm">
                     <div class="form-check mb-4">
@@ -524,11 +413,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </a>
                 </form>
                 
-                <div class="attendance-history">
-                    <div class="history-header">
-                        <h5><i class="fas fa-history me-2"></i>Attendance History</h5>
-                        <small class="text-muted">Last 30 days</small>
-                    </div>
+                <div class="attendance-history mt-4">
+                    <h5 class="mb-3"><i class="fas fa-history me-2"></i>Recent Attendance</h5>
                     <div class="list-group" id="historyList">
                         <?php if ($history_result->num_rows > 0): ?>
                             <?php while($row = $history_result->fetch_assoc()): ?>
@@ -539,9 +425,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                     </span>
                                     <span class="history-status <?= $row['on_leave'] ? 'status-leave' : 'status-present' ?>">
                                         <?= $row['on_leave'] ? 'On Leave' : 'Present' ?>
-                                        <?php if (!$row['on_leave'] && !empty($row['check_in_time'])): ?>
-                                            <span class="history-time">at <?= date('h:i A', strtotime($row['check_in_time'])) ?></span>
-                                        <?php endif; ?>
                                     </span>
                                 </div>
                             <?php endwhile; ?>
@@ -561,7 +444,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div class="footer-content">
                 <div class="footer-column">
                     <h5>Inadev</h5>
-                    <p>The sky isn't the limit.</p>
+                    <p>Innovating digital solutions for tomorrow's challenges.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -590,9 +473,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <div class="footer-column">
                     <h5>Contact</h5>
                     <ul class="footer-links">
-                        <li><i class="fas fa-map-marker-alt me-2"></i> Unit 901, Tower 1, Godrej Waterside Sector V, Salt Lake City | West Bengal - 700091e</li>
-                        <li><i class="fas fa-phone me-2"></i> +91 33 6606 4343</li>
-                        <li><i class="fas fa-envelope me-2"></i> info@inadev.com</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Tech Park, Bangalore</li>
+                        <li><i class="fas fa-phone me-2"></i> +91 80 1234 5678</li>
+                        <li><i class="fas fa-envelope me-2"></i> hr@inadev.com</li>
                     </ul>
                 </div>
             </div>
@@ -647,7 +530,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         attendanceForm.addEventListener('submit', function(e) {
             const onLeave = document.getElementById('onLeave');
             if (!onLeave.checked) {
-                // Add visual confirmation for present marking
                 submitBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Marking Present...';
                 submitBtn.classList.add('btn-success');
             } else {
@@ -666,17 +548,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 }, 500);
             });
         });
-        
-        // Real-time clock for fun (could be used in future enhancements)
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            // Could display this somewhere in the UI
-        }
-        
-        setInterval(updateClock, 1000);
-        updateClock();
     </script>
 </body>
 </html>
